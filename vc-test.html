@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BI6CORD Voice Test</title>
+<script src="https://cdn.scaledrone.com/scaledrone.min.js"></script>
+<style>
+body{margin:0;font-family:sans-serif;background:#36393F;color:#DCDDDE;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;height:100vh;}
+#members{margin-top:12px;padding:10px;background:#2c2d31;width:300px;border-radius:8px;}
+.member{margin:4px 0;}
+button{margin:4px;padding:8px 12px;border:none;border-radius:6px;background:#5865F2;color:white;cursor:pointer;}
+audio{display:none;}
+</style>
+</head>
+<body>
+
+<h1>BI6CORD Voice Test</h1>
+<button id="joinBtn">Click to Join Voice</button>
+<button id="muteBtn">Mute</button>
+
+<div id="status">Not connected</div>
+<div id="members"></div>
+
+<div id="audioContainer"></div>
+
+<script>
+const CLIENT_ID = "TnDePK63MJquB3ns"; // Your Scaledrone Channel ID
+const VOICE_ROOM = "observable-voice-test";
+let drone, localStream, pcs = {}, joined = false, muted=false;
+const audioContainer = document.getElementById('audioContainer');
+const statusEl = document.getElementById('status');
+const membersEl = document.getElementById('members');
+
+// --- Initialize ---
+function init() {
+    const name = "User_" + Math.floor(Math.random()*1000);
+    drone = new ScaleDrone(CLIENT_ID, {data: {name}});
+    drone.on('open', err => {
+        if(err) return console.error(err);
+        statusEl.textContent = "Connected as " + name;
+        subscribeVoiceRoom();
+    });
+}
+
+// --- Join Voice ---
+async function joinVoice() {
+    if(joined) return;
+    try {
+        localStream = await navigator.mediaDevices.getUserMedia({audio:true});
+        joined = true;
+        statusEl.textContent = "Joined voice room";
+    } catch(e) {
+        alert("Mic access denied");
+        console.error(e);
+    }
+}
+
+// --- Subscribe Room ---
+function subscribeVoiceRoom() {
+    const room = drone.subscribe(VOICE_ROOM);
+    room.on('members', members => updateMembers(members));
+    room.on('member_join', member => updateMembers([...Object.values(room.members), member]));
+    room.on('member_leave', member => updateMembers([...Object.values(room.members).filter(m=>m.id!==member.id)]));
+    room.on('data', (data, member) => handleSignal(data, member));
+}
+
+// --- Members UI ---
+function updateMembers(members){
+    membersEl.innerHTML = "";
+    members.forEach(m => {
+        const el = document.createElement('div');
+        el.className = "member";
+        el.textContent = m.clientData?.name || "Unknown";
+        membersEl.appendChild(el);
+        if(m.id!==drone.clientId && !pcs[m.id] && joined) setupPeer(m.id, true);
+    });
+}
+
+// --- Setup Peer ---
+function setupPeer(peerId, initiator){
+    const pc = new RTCPeerConnection({
+        iceServers:[
+            {urls:'stun:stun.l.google.com:19302'},
+            {urls:'turn:numb.viagenie.ca',credential:'muazkh',username:'webrtc@live.com'}
+        ]
+    });
+    pcs[peerId] = pc;
+    if(localStream) localStream.getTracks().forEach(t=>pc.addTrack(t, localStream));
+    pc.ontrack = evt => {
+        let audio = document.getElementById('audio-'+peerId);
+        if(!audio){
+            audio = document.createElement('audio');
+            audio.id = 'audio-'+peerId;
+            audio.autoplay = true;
+            audioContainer.appendChild(audio);
+        }
+        audio.srcObject = evt.streams[0];
+        audio.play().catch(()=>console.warn("Autoplay blocked"));
+    };
+    pc.onicecandidate = ev => {
+        if(ev.candidate) drone.publish({room: VOICE_ROOM, message:{type:'candidate', candidate: ev.candidate, from: drone.clientId}});
+    };
+
+    if(initiator){
+        pc.createOffer().then(offer=>{
+            pc.setLocalDescription(offer).then(()=>drone.publish({room:VOICE_ROOM,message:{type:'offer',sdp:offer,from:drone.clientId}}));
+        });
+    }
+}
+
+// --- Handle Signals ---
+async function handleSignal(message, member){
+    if(!message || !member) return;
+    if(member.id === drone.clientId) return;
+    if(!pcs[member.id]) setupPeer(member.id,false);
+    const pc = pcs[member.id];
+    if(message.type==='offer'){
+        await pc.setRemoteDescription(new RTCSessionDescription(message.sdp));
+        const ans = await pc.createAnswer();
+        await pc.setLocalDescription(ans);
+        drone.publish({room:VOICE_ROOM,message:{type:'answer',sdp:ans,from:drone.clientId}});
+    } else if(message.type==='answer'){
+        await pc.setRemoteDescription(new RTCSessionDescription(message.sdp));
+    } else if(message.type==='candidate'){
+        await pc.addIceCandidate(new RTCIceCandidate(message.candidate));
+    }
+}
+
+// --- Mute/Unmute ---
+function toggleMute(){
+    if(!localStream) return;
+    muted=!muted;
+    localStream.getAudioTracks().forEach(t=>t.enabled=!muted);
+    document.getElementById('muteBtn').textContent = muted ? "Unmute" : "Mute";
+}
+
+// --- Event Listeners ---
+document.getElementById('joinBtn').addEventListener('click', async ()=>{
+    await joinVoice();
+    init();
+});
+document.getElementById('muteBtn').addEventListener('click', toggleMute);
+</script>
+
+</body>
+</html>

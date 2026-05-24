@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BI6ZONE - FAQ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            min-height: 100vh;
+            background: radial-gradient(ellipse at top, hsl(45, 100%, 15%) 0%, hsl(0, 0%, 5%) 50%, hsl(0, 0%, 0%) 100%);
+            position: relative;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Halftone pattern overlays */
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            mask-image: radial-gradient(ellipse at center, black 40%, transparent 70%);
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.05) 2px, transparent 2px);
+            background-size: 40px 40px;
+            mask-image: radial-gradient(ellipse at 70% 30%, black 30%, transparent 60%);
+            opacity: 0.2;
+            pointer-events: none;
+        }
+
+        /* Slide-in animations */
+        @keyframes slideInFromTop {
+            0% {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInFromLeft {
+            0% {
+                transform: translateX(-50px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: slideInFromTop 0.8s ease-out;
+        }
+
+        .title {
+            font-size: 3rem;
+            font-weight: 900;
+            color: hsl(45, 100%, 70%);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.025em;
+            text-shadow: 
+                0 0 20px hsl(45, 100%, 50%), 
+                0 0 40px hsl(45, 100%, 50%), 
+                0 0 60px hsl(45, 100%, 50%);
+        }
+
+        .subtitle {
+            color: hsl(45, 50%, 50%);
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+
+        .content {
+            animation: slideInFromTop 1s ease-out 0.3s both;
+        }
+
+        .faq-item {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 1rem;
+            backdrop-filter: blur(8px);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            animation: slideInFromLeft 0.8s ease-out calc(var(--delay) * 0.1s) both;
+        }
+
+        .faq-item:hover {
+            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+        }
+
+        .faq-question {
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: hsl(45, 100%, 70%);
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+        }
+
+        .faq-question:hover {
+            color: hsl(45, 100%, 80%);
+        }
+
+        .faq-question::after {
+            content: '+';
+            font-size: 1.5rem;
+            margin-left: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .faq-question.active::after {
+            transform: rotate(45deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        .faq-answer.active {
+            max-height: 500px;
+            padding: 0 1.5rem 1.5rem 1.5rem;
+        }
+
+        .faq-answer-content {
+            color: hsl(45, 80%, 80%);
+            line-height: 1.7;
+        }
+
+        .faq-answer-content p {
+            margin-bottom: 1rem;
+        }
+
+        .faq-answer-content ul {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .faq-answer-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .highlight {
+            color: hsl(45, 100%, 85%);
+            font-weight: 500;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            animation: slideInFromTop 1.2s ease-out 0.6s both;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: hsl(45, 100%, 70%);
+            text-decoration: none;
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 0.75rem;
+            backdrop-filter: blur(8px);
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 300;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        @media (min-width: 768px) {
+            .title {
+                font-size: 4rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .title {
+                font-size: 2.5rem;
+            }
+            
+            .faq-item {
+                margin-bottom: 1rem;
+            }
+
+            .faq-question {
+                padding: 1rem;
+                font-size: 1rem;
+            }
+
+            .faq-answer.active {
+                padding: 0 1rem 1rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="title">FAQ</h1>
+            <p class="subtitle">Frequently Asked Questions about BI6ZONE</p>
+        </div>
+
+        <!-- FAQ Content -->
+        <div class="content">
+            <div class="faq-item" style="--delay: 1">
+                <div class="faq-question">
+                    What is BI6ZONE?
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>BI6ZONE is a comprehensive web platform that provides access to unblocked games, apps, and various utilities. It's designed to offer entertainment and productivity tools in environments where access might be restricted.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" style="--delay: 2">
+                <div class="faq-question">
+                    Is BI6ZONE safe to use?
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p><span class="highlight">Yes, BI6ZONE is safe to use.</span> We prioritize user security and privacy. All content is carefully curated, and we don't collect personal information beyond basic analytics for site improvement.</p>
+                        <p>However, always be mindful of your organization's policies regarding internet usage.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" style="--delay: 3">
+                <div class="faq-question">
+                    How do I access blocked content through BI6ZONE?
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Simply navigate to the relevant section (Games, Apps, Proxies) and click on the content you want to access. Most games and apps load directly in your browser without requiring downloads or installations.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" style="--delay: 4">
+                <div class="faq-question">
+                    Why use the "Open Blank" feature?
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>The "Open Blank" feature opens BI6ZONE in a new tab with <span class="highlight">about:blank</span> as the URL, which can help:</p>
+                        <ul>
+                            <li>Avoid detection in browser history</li>
+                            <li>Bypass certain URL-based filters</li>
+                            <li>Provide a cleaner browsing experience</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" style="--delay: 5">
+                <div class="faq-question">
+                    What types of games are available?
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>BI6ZONE offers a wide variety of games including:</p>
+                        <ul>
+                            <li>Classic arcade games</li>
+                            <li>Puzzle and strategy games</li>
+                            <li>Action and adventure games</li>
+                            <li>Multiplayer online games</li>
+                            <li>Educational games</li>
+                        </ul>
+                        <p>All games are browser-based and require no downloads.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" style="--delay: 6">
+                <div class="faq-question">
+                    How do the proxy features work?
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Our proxy section provides various web proxy services that route your internet traffic through different servers, potentially allowing access to restricted websites. <span class="highlight">Use responsibly</span> and in accordance with your local policies.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" style="--delay: 7">
+                <div class="faq-question">
+                    What is the HWBot feature?
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>HWBot (Homework Helper Bot) is an AI-powered assistant designed to help with educational tasks and homework questions. It provides explanations, solutions, and guidance across various subjects.</p>
+                        <p><span class="highlight">Note:</span> Always use this tool as a learning aid, not as a replacement for your own work and understanding.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" style="--delay: 8">
+                <div class="faq-question">
+                    Can I request new games or features?
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Absolutely! We welcome community feedback and suggestions. You can:</p>
+                        <ul>
+                            <li>Submit requests through our support form</li>
+                            <li>Contact us via GitHub</li>
+                            <li>Check our update log for recently added features</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" style="--delay: 9">
+                <div class="faq-question">
+                    Does BI6ZONE work on mobile devices?
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p><span class="highlight">Yes!</span> BI6ZONE is fully responsive and works on smartphones, tablets, and desktop computers. The interface adapts to your screen size for optimal usability.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" style="--delay: 10">
+                <div class="faq-question">
+                    What should I do if something isn't working?
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>If you encounter issues:</p>
+                        <ul>
+                            <li>Try refreshing the page or clearing your browser cache</li>
+                            <li>Check if the issue persists in incognito/private mode</li>
+                            <li>Try a different browser or device</li>
+                            <li>Contact support through our GitHub or support form</li>
+                        </ul>
+                        <p>Most issues are browser-related and can be resolved with these basic troubleshooting steps.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <a href="/" class="back-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m12 19-7-7 7-7"/>
+                    <path d="M19 12H5"/>
+                </svg>
+                Back to BI6ZONE
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // FAQ accordion functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqQuestions = document.querySelectorAll('.faq-question');
+            
+            faqQuestions.forEach(question => {
+                question.addEventListener('click', function() {
+                    const answer = this.nextElementSibling;
+                    const isActive = this.classList.contains('active');
+                    
+                    // Close all other FAQ items
+                    faqQuestions.forEach(q => {
+                        q.classList.remove('active');
+                        q.nextElementSibling.classList.remove('active');
+                    });
+                    
+                    // Toggle current item
+                    if (!isActive) {
+                        this.classList.add('active');
+                        answer.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

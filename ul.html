@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BI6ZONE — Update Log</title>
+
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body {
+            background: #0d0d0f;
+            color: #fff;
+            overflow-x: hidden;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 25px;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: #a8a8ff;
+            text-align: left;
+        }
+
+        .update-item {
+            background: rgba(255,255,255,0.08);
+            padding: 18px 22px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            animation: fadeInUp 0.45s ease forwards;
+            opacity: 0;
+            transform: translateY(20px);
+            animation-delay: calc(var(--delay) * 0.15s);
+        }
+
+        .update-item .version {
+            display: inline-block;
+            background: #6c63ff;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .update-item h3 {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .update-item p {
+            font-size: 0.95rem;
+            line-height: 1.4rem;
+            color: #dcdcff;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0px);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>BI6ZONE Update Log</h1>
+
+        <h2 class="section-title">Latest Updates</h2>
+
+        <!-- AUTO-INSERTED UPDATES WILL BE ADDED DIRECTLY BELOW THIS COMMENT -->
+        
+        <!-- Example of the format Gemini will generate (these are placeholders you can delete if you want): -->
+        <div class="update-item" style="--delay: 1">
+            <span class="version">v1.0.0</span>
+            <h3>Initial Update Log Setup</h3>
+            <p>The update log system is now online. Future updates will be automatically added here.</p>
+        </div>
+
+    </div>
+
+</body>
+</html>
